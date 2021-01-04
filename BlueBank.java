@@ -1,6 +1,6 @@
-import java.util.Scanner;
-import java.io.File;  
-import java.io.IOException;  
+import java.util.Scanner; 
+import java.util.List;  
+import java.util.ArrayList;
 
 class BlueBank {
 
@@ -10,15 +10,14 @@ class BlueBank {
 
         // exec variables
         boolean runProgram = true;
-        int option;
+        String option;
 
         // Uuer variables
+        Account account;
         String accountID;
         double startBalanceCL = 1000000;
         double startBalanceUSD = 0;
-        Account account;
-        String historyFilename;
-        int numberTransaction = 0;
+        ArrayList<String> userHistory = new ArrayList<String>();
 
         // welcome message
         ConsoleUI.welcomeMenu();
@@ -26,8 +25,7 @@ class BlueBank {
         // init account
         System.out.print("Account ID: ");
         accountID = scanner.nextLine();
-        historyFilename = "movementHistory/Historial - "+accountID+".txt";
-        account = new Account(accountID, startBalanceCL, startBalanceUSD, historyFilename);
+        account = new Account(accountID, startBalanceCL, startBalanceUSD, userHistory);
 
         while(runProgram) {
             
@@ -36,23 +34,67 @@ class BlueBank {
 
             try {
 
-                option = scanner.nextInt();
+                option = scanner.nextLine();
                 String currencyAndAmount;
+                boolean worngInputs = true;
 
                 switch(option){
-                    case 1:
-                        ConsoleUI.option1();
-                        currencyAndAmount = scanner.nextLine();
+
+                    case "1":
+
+                        while(worngInputs){
+                            ConsoleUI.option1();
+                            currencyAndAmount = scanner.nextLine();
+                            String[] inputs1 = currencyAndAmount.split(" ");
+                            String currency1 = inputs1[0];
+                            String StringAmount1 = inputs1[1];    
+
+                            try {
+                                double amount1 =  Double.parseDouble(StringAmount1);
+                                account.addFunds(amount1, currency1);
+                                worngInputs = false;
+                                
+                            }
+                            catch (Exception e) {
+                                System.out.println(e);
+                                System.out.printf("Ops! An error happened. Try again\n"+">> ");
+                                continue;
+                            }
+                        }
                         break;
-                    case 2:
-                        ConsoleUI.option2();
-                        currencyAndAmount = scanner.nextLine();
+
+                    case "2":
+                        
+                        while(worngInputs){
+                            ConsoleUI.option1();
+                            currencyAndAmount = scanner.nextLine();
+                            String[] inputs1 = currencyAndAmount.split(" ");
+                            String currency1 = inputs1[0];
+                            String StringAmount1 = inputs1[1];    
+
+                            try {
+                                double amount1 =  Double.parseDouble(StringAmount1);
+                                account.withdrawFunds(amount1, currency1);
+                                worngInputs = false;
+                                
+                            }
+                            catch (Exception e) {
+                                System.out.println(e);
+                                System.out.printf("Ops! An error happened. Try again\n"+">> ");
+                                continue;
+                            }
+                        }
                         break;
-                    case 3:
+
+                    case "3":
+                        System.out.println("\nTransaction History:");
+                        account.printHistory();
                         break;
-                    case 4:
+
+                    case "4":
                         runProgram = false;
                         break;
+
                     default:
                         System.out.println("[!] Not valid option.");
                         break;
@@ -60,7 +102,7 @@ class BlueBank {
 
             } catch (Exception e) {
                 System.out.println("[!] Not valid format option. Exit ...");
-                System.exit(0);
+                continue;
             }
 
         }
